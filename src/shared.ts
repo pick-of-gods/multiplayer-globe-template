@@ -15,4 +15,22 @@ export type OutgoingMessage =
   | {
       type: "remove-marker";
       id: string;
-    };
+    }
+  // Phase 17 Bi-Directional Tail (<-|->)
+  | {
+      type: "direct_perception";
+      payload: any;
+    }
+  | {
+      type: "entity_spawn";
+      id: string;
+      x: number;
+      y: number;
+      z: number;
+      animation_id: number;
+      asset_url: string;
+    }
+  | {
+      type: "volitional_request";
+      target: string;
+    };;

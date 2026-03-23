@@ -68,6 +68,27 @@ export class Globe extends Server {
     );
   }
 
+  // Phase 17: Sovereign Bidirectional Tail <-|->
+  onMessage(connection: Connection<ConnectionState>, message: string): void {
+    try {
+      const data = JSON.parse(message);
+      
+      // 1. POG2 -> Globe -> Web Clients (The Outward Tail)
+      if (data.type === "direct_perception" || data.type === "entity_spawn") {
+        this.broadcast(message, [connection.id]);
+        return;
+      }
+
+      // 2. Web Clients -> Globe -> POG2 (The Inward Tail)
+      if (data.type === "volitional_request") {
+        this.broadcast(message, [connection.id]);
+        return;
+      }
+    } catch (err) {
+      console.error("Failed to parse Globe message:", err);
+    }
+  }
+
   onClose(connection: Connection): void | Promise<void> {
     this.onCloseOrError(connection);
   }
