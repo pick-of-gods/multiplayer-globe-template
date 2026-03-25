@@ -24,7 +24,7 @@ export class Globe extends Server {
     // First, let's extract the position from the Cloudflare headers
     const latitude = ctx.request.cf?.latitude as string | undefined;
     const longitude = ctx.request.cf?.longitude as string | undefined;
-    
+
     // Phase 19: Allow optional position (system nodes)
     const position = (latitude && longitude) ? {
       lat: parseFloat(latitude),
@@ -89,13 +89,13 @@ export class Globe extends Server {
   async onMessage(connection: Connection<ConnectionState>, message: string): Promise<void> {
     try {
       const data = JSON.parse(message);
-      
+
       // 🧬 Phase 19: Handle Telemetry Persistence (the "State map")
       if (data.type === "update-node") {
         this.nodes[data.nodeId] = data.data;
         // Persist to Durable Object storage
         await this.ctx.storage.put("nodes", this.nodes);
-        
+
         // Broadcast the update to everyone else
         this.broadcast(message, [connection.id]);
         console.log(`📡 Globe State updated and persisted for node: ${data.nodeId}`);
@@ -119,7 +119,8 @@ export class Globe extends Server {
   }
 
   /**
-   * 🧬 Phase 20: REST Health & Pulse Endpoints
+   * 🧬 Phase 20: REST Health & Pulse Endpoints (now handled in main fetch)
+   * Kept for backward compatibility with direct DO access
    */
   async onRequest(request: Request): Promise<Response> {
     const url = new URL(request.url);
@@ -148,6 +149,23 @@ export class Globe extends Server {
 
 export default {
   async fetch(request: Request, env: Env): Promise<Response> {
+    const url = new URL(request.url);
+
+    // 🧬 Phase 20: Handle health check BEFORE PartyKit routing
+    // This fixes the 404 errors seen in Cloudflare logs
+    if (url.pathname.endsWith("/health")) {
+      return new Response(JSON.stringify({
+        status: "healthy",
+        timestamp: Date.now(),
+        version: "88f9a75e",
+        service: "multiplayer-globe-pog2"
+      }), {
+        status: 200,
+        headers: { 'Content-Type': 'application/json' }
+      });
+    }
+
+    // Route to PartyKit/Durable Object
     return (
       (await routePartykitRequest(request, { ...env })) ||
       new Response("Not Found", { status: 404 })
