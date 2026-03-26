@@ -48,7 +48,7 @@ export class Globe extends Server {
         nodes: this.nodes,
         lastSync: Date.now()
       }
-    }));
+    } satisfies OutgoingMessage));
 
     // Now, let's send markers to the new connection
     for (const connection of this.getConnections<ConnectionState>()) {

@@ -48,3 +48,82 @@ a {
   text-underline-offset: 3px;
   text-decoration-color: #555;
 }
+
+/* 🧬 POG2 Telemetry Panel Styles */
+.telemetry-panel {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  width: 280px;
+  background: rgba(0, 0, 0, 0.7);
+  backdrop-filter: blur(8px);
+  border: 1px solid rgba(0, 255, 255, 0.2);
+  border-radius: 12px;
+  padding: 16px;
+  text-align: left;
+  z-index: 1000;
+  box-shadow: 0 4px 32px rgba(0, 0, 0, 0.5);
+}
+
+.telemetry-panel h3 {
+  color: #00ffff;
+  font-size: 14px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  margin-bottom: 12px;
+  border-bottom: 1px solid rgba(0, 255, 255, 0.1);
+  padding-bottom: 8px;
+}
+
+.node-list {
+  max-height: 400px;
+  overflow-y: auto;
+}
+
+.node-item {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 8px;
+  padding: 8px;
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 6px;
+  border-left: 3px solid #ccc;
+  transition: all 0.2s ease;
+}
+
+.node-item.active { border-left-color: #00ff00; }
+.node-item.warning { border-left-color: #ffff00; }
+.node-item.error { border-left-color: #ff0000; }
+.node-item.empty { 
+  justify-content: center;
+  color: #666;
+  font-style: italic;
+  border: none;
+}
+
+.node-id {
+  font-family: monospace;
+  color: #fff;
+  font-size: 13px;
+}
+
+.node-score {
+  background: rgba(0, 255, 255, 0.1);
+  color: #00ffff;
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-size: 11px;
+  font-weight: bold;
+}
+
+.node-details {
+  width: 100%;
+  font-size: 11px;
+  color: #999;
+  margin-top: 4px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}

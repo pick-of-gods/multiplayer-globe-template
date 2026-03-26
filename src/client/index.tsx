@@ -14,6 +14,8 @@ function App() {
   const canvasRef = useRef<HTMLCanvasElement>();
   // The number of markers we're currently displaying
   const [counter, setCounter] = useState(0);
+  // POG2 Durable State: Telemetry Nodes
+  const [nodes, setNodes] = useState<Record<string, any>>({});
   // A map of marker IDs to their positions
   // Note that we use a ref because the globe's `onRender` callback
   // is called on every animation frame, and we don't want to re-render
@@ -41,11 +43,21 @@ function App() {
         });
         // Update the counter
         setCounter((c) => c + 1);
-      } else {
+      } else if (message.type === "remove-marker") {
         // Remove the marker from our map
         positions.current.delete(message.id);
         // Update the counter
         setCounter((c) => c - 1);
+      } else if (message.type === "state-sync") {
+        // Synchronize the entire node substrate
+        setNodes(message.state.nodes);
+        console.log("🧬 POG2 State Synchronized:", message.state.id);
+      } else if (message.type === "update-node") {
+        // Atomic update for a specific node
+        setNodes((prev) => ({
+          ...prev,
+          [message.nodeId]: message.data,
+        }));
       }
     },
   });
@@ -98,6 +110,24 @@ function App() {
       ) : (
         <p>&nbsp;</p>
       )}
+
+      {/* 🧬 POG2 Telemetry Panel */}
+      <div className="telemetry-panel">
+        <h3>🧬 POG2 Telemetry</h3>
+        <div className="node-list">
+          {Object.entries(nodes).length === 0 ? (
+            <div className="node-item empty">Waiting for POG2 pulse...</div>
+          ) : (
+            Object.entries(nodes).map(([id, data]) => (
+              <div key={id} className={`node-item ${data.status || 'active'}`}>
+                <span className="node-id">{id}</span>
+                <span className="node-score">{(data.score || 0).toFixed(2)}</span>
+                <div className="node-details">{data.lastActivity || 'monitoring'}</div>
+              </div>
+            ))
+          )}
+        </div>
+      </div>
 
       {/* The canvas where we'll render the globe */}
       <canvas

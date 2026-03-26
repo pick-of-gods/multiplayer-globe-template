@@ -33,4 +33,17 @@ export type OutgoingMessage =
   | {
       type: "volitional_request";
       target: string;
-    };;
+    }
+  | {
+      type: "state-sync";
+      state: {
+        id: string;
+        nodes: Record<string, any>;
+        lastSync: number;
+      };
+    }
+  | {
+      type: "update-node";
+      nodeId: string;
+      data: any;
+    };
